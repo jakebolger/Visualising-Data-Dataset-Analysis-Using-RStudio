@@ -224,3 +224,60 @@ ggplot(AmericanYouthLifeAspects, aes(x = INCOME_, fill = SAMPLE_SEX)) +
 ggplot(AmericanYouthLifeAspects, aes(x = INCOME_, fill = COUNTRY_OF_BIRTH)) +   
   # Draw overlaying histogram
   geom_histogram(position = "i?entity", alpha = 0.2, bins = 50)
+
+#install.packages("ggforce")
+library(ggforce)
+library(reshape2)
+
+#Develop your story using 3 or more charts.  Charts should be relevant, effective, correct and should portray your story.  
+#Your charts should be understand?ble by readers who have not read your background research.       (12 marks)
+#
+#chart that outputs the income of females and males between the years 1979-1989.
+#
+str(AmericanYouthLifeAspects)
+
+#selecting data between 1979 and 1985
+#df7989 = sqldf("select YE?R, SAMPLE_SEX, '5000' INCOME_ from AmericanYouthLifeAspects group by YEAR_OF_BIRTH")
+df7985 <- sqldf("select * from AmericanYouthLifeAspects where YEAR between 1979 and 1985")
+df7985 <- sqldf("select * from df7989 where COUNTRY_OF_BIRTH = 'IN THE US'")
+#he?d(df7989, n = 30)
+str(df7985)
+
+#narrowing down the data
+#
+df79 <- sqldf("select * from AmericanYouthLifeAspects where YEAR = '1979'")
+str(df79)
+df79US <- sqldf("select * from df79 where COUNTRY_OF_BIRTH = 'IN THE US'")
+str(df79US)
+
+#first 172 rows
+#
+dfID9 ?- sqldf("select * from AmericanYouthLifeAspects where ID <= '9' ")
+str(dfID9)
+dfID7999 <- sqldf("select * from dfID9 where YEAR between 1979 and 1999")
+str(dfID7999)
+
+# encoded basic scatterplot for 1979-99
+#
+ptch = ggplot(dfID7999, aes(x=YEAR, y=INCOME_, ?olour = SAMPLE_SEX)) + 
+  geom_point() + 
+  labs(title = 'Plotting Data from the Year 1979-99 for 
+  -income per Year ',
+        subtitle = 'Colour coded by GENDER / SEX',
+                   x = 'Timeline of Years (1979-1999)', y='Income of Year',
+        ?          caption='Based on Gender') + theme(panel.background=element_rect(fill='white'), panel.grid.minor = element_line(color = "black",
+                                                                                                                     ?             size = 0.5,
+                                                                                                                                   linetype = 2), 
+                                                      legend.text = element_text(col?ur = "blue", size = rel(.75)), 
+                                                      legend.title = element_text(colour = 'black', size = rel(1)),
+                                                      plot.title = element_text(colour = "black", size = rel?2)),
+                                                      plot.subtitle = element_text(size = rel(1.5)),
+                                                      plot.caption = element_text(size = rel(1.5), face='bold')) + 
+  annotate("text",  x = 1989, y = ?5000, label = "Highest Income Male", size =4, fontface='italic')+
+  geom_circle(aes(x0 = 1989, y0 = 62400, r = 5),
+              inherit.aes = FALSE)
+ptch
+#
+#
+
+
