@@ -98,98 +98,138 @@ write_csv(AmericanYouthLifeAspects, pathname)
 #
 str(AmericanYouthLifeAspects)
 
+##dataset was made smaller so the graphs would work better as to? many observations made the graphs look abnormal. 1979-1999
+#
+dftidy <- sqldf("select * from AmericanYouthLifeAspects where ID <= '20' ")
+str(dftidy)
+#selecting years
+#
+df7999 <- sqldf("select * from dftidy where YEAR between 1979 and 1999")
+#now has 310 o?servations
+#
+str(df7999)
+
+##smaller for 2000-2012
+#first * row making it smaller for better looking graph
+#
+dftidy2 <- sqldf("select * from AmericanYouthLifeAspects where ID <= '50' ")
+str(dftidy2)
+#selecting years 2000-2012
+#
+df2012 <- sqldf("select * fro? dftidy2 where YEAR between 2000 and 2012")
+#now has 245 observations
+#
+str(df2012)
 #tidying and merging complete
 #
 
 
-#Explore your data using chart? and code.  (4 marks)
+#Explore your data using charts and code.  (4 marks)
 #
 #first different time trends were explored
 #
-#trend graph bar chart for average Income of American youth from 1979-2012 grouped by year of birth between 1957 and 1964 using meant which returns mean of values.
+#trend graph bar charts for average In?ome of American youth from 1979-2012 grouped by year.
+#79-99
 #
-YearIncome = sqldf("s?lect YEAR_OF_BIRTH, avg(INCOME_) meant from AmericanYouthLifeAspects group by YEAR_OF_BIRTH")
-ggplot(YearIncome, aes(x=YEAR_OF_BIRTH, y=meant, fill = meant))+geom_bar(stat='identity')
+YearIncome = sqldf("select YEAR, avg(INCOME_) Average_Income from df7999 group by YEAR")
+ggplot(YearIncome, aes(x=YEAR, y=Average_Income, fill = Average_Income))+geom_bar(stat='identity')
 
-str(AmericanYouthLifeAspects)
+#00-?2
+#
+YearIncome2 = sqldf("select YEAR, avg(INCOME_) Average_Income from df2012 group by YEAR")
+ggplot(YearIncome2, aes(x=YEAR, y=Average_Income, fill = Average_Income))+geom_bar(stat='identity')
+#
+#as you can see there a big difference in the average income?in the time periods. there is an increase every year.
+#str(AmericanYouthLifeAspects)
 
-#next the data was explored using line c?arts
+#next the data was explored using line charts
 #
 
-#Selecting and displaying line charts
+#Selecting and displaying line charts for the maxium income over the years 1979-2012
 #
-YearIncomeLine = sqldf("select YEAR_OF_BIRTH, avg(INCOME_) meant from AmericanYouthLifeAspects group by YEAR_OF_BIRTH")
-ggplot(YearIncomeLine, aes(x=YEAR_OF_BIRTH, y=meant))+geom_line()
+YearIncomeLine = sqldf("select YEA?, avg(INCOME_MAX) Maximum_Income from df7999 group by YEAR")
+ggplot(YearIncomeLine, aes(x=YEAR, y=Maximum_Income))+geom_line()
 
-YearIncomeLine2 = sql?f("select YEAR_OF_BIRTH, avg(INCOME_MAX) meant from AmericanYouthLifeAspects group by YEAR_OF_BIRTH")
-ggplot(YearIncomeLine2, aes(x=YEAR_OF_BIRTH, y=meant))+geom_line()
-
-
+YearIncomeLine2 = sqldf("select YEAR, avg(INCOME_MAX) Maximum_Income from df2012 group by YEAR")
+ggplot(YearIncomeLine2, aes(x=Y?AR, y=Maximum_Income))+geom_line()
 
 
-YearIncomeLine3 = sqldf("select YEAR_OF_BIRTH, JOBSNUM_, '5000' INCOME_ from Americ?nYouthLifeAspects group by YEAR_OF_BIRTH")
-ggplot(YearIncomeLine3, aes(x=YEAR_OF_BIRTH, y=JOBSNUM_))+geom_line()
 
-YearIncomeLine4 = sqldf("select YEAR_OF_BIRTH, JOBSNUM_, '11000' INCOME_ from AmericanYouthLifeAspects group by YEAR_OF_BIRTH")
-ggplot(YearInc?meLine3, aes(x=YEAR_OF_BIRTH, y=JOBSNUM_))+geom_line()
 
+YearIncomeLine3 = sqldf("select YEAR, avg(INCOME_MAX) Maximum_Income, 'FEMALE' SAMPLE_SEX from df7999 group by YEAR")
+ggplot(YearIncomeLine3, aes(x=YEAR, y=Maximum_Income))+geom_line()
+
+YearIncomeLine4 = sqldf("select?YEAR, avg(INCOME_MAX) Maximum_Income, 'MALE' SAMPLE_SEX from df2012 group by YEAR")
+ggplot(YearIncomeLine4, aes(x=YEAR, y=Maximum_Income))+geom_line()
 #combining Income line charts datasets
 #
-df1=sqldf("select * from YearIncomeLine3 union select * from YearIncomeLine4")
+df1=sqldf("select * from YearIncomeLine3 union select * from Yea?IncomeLine4")
 head(df1)
 str(df1)
 
 
-ggplot(df1, aes(x=YEAR_OF_BIRTH, y=JOBSNUM_)) +
+ggplot(df1, aes(x=YEAR, y=Maximum_Income)) +
   
-  facet_?rid(facets = INCOME_~.) +
+  facet_grid(facets = SAMPLE_SEX~.) +
   geom_line() +theme_classic()
 
 
 ##combining to make combined bar
 #
-ggplot(df1, aes(x=YEAR_OF_BIRTH, y=JOBSNUM_, fill=INCOME_)) +
+ggplot(df1, aes(x=YEAR, y=Maximum_Income, fill=SAMPLE_SEX)) +
   
-  geom_bar(stat='identity') +theme_classic()
+  ?eom_bar(stat='identity') +theme_classic()
 
 
 #ROW wise small multiples
 #
-ggplot(data = df1, aes?x = YEAR_OF_BIRTH, y = JOBSNUM_)) + 
-  geom_bar(stat='identity') +
-  facet_grid(facets = .~INCOME_) +
-  theme_classic()
+#ggplot(data = df1, aes(x = YEAR, y = Maximum_Income)) + 
+  #geom_bar(stat='identity') +
+  #facet_grid(facets = .~SAMPLE_SEX) +
+  #theme_classic()
 
 
-#next comparison charts were used to explore the data
+#next comparison charts were used t? explore the data
 #
 #install.packages("ggplot2")
 library(ggplot2)
 
 str(AmericanYouthLifeAspects)
 
-?first comparison chart was single variable exploration using a histogram
+#first comparison chart was single variable exploration using a histogram
+#79-99
 #
-p <- ggplot(AmericanYouthLifeAspects, aes(x=YEAR_OF_BIRTH)) + 
+p <- ggplot(df7999, aes(x=YEAR_OF_BIRTH)) + 
+  geom_histogram(bins=8,fill="?urple", color="Blue") +
+  geom_freqpoly(binwidth=1,color="Green")
+p
+#2000-2012
+#
+p <- ggplot(df2012, aes(x=YEAR_OF_BIRTH)) + 
   geom_histogram(bins=8,fill="Purple", color="Blue") +
   geom_freqpoly(binwidth=1,color="Green")
 p
 
-#then i used a box?plot using single variable exploration
+#not included
 #
-ggplot(AmericanYouthLifeAspects, aes(x=as.factor(JOBSNUM_), y=YEAR_OF_BIRTH, fill=JOBSNUM_)) + geom_boxplot()
+#then i used a?box plot using single variable exploration
+#
+#ggplot(AmericanYouthLifeAspects, aes(x=as.factor(JOBSNUM_), y=YEAR_OF_BIRTH, fill=JOBSNUM_)) + geom_boxplot()
+#
 
+
+#next
 #Density Plot for maximum income based on sex/gender
 #
 theme_set(theme_classic())
 
 # Plot
-g <- ggplot(Am?ricanYouthLifeAspects, aes(INCOME_MAX))
+? <- ggplot(AmericanYouthLifeAspects, aes(INCOME_MAX))
 g + geom_density(aes(fill=factor(SAMPLE_SEX)), alpha=0.8) + 
   labs(title="Density plot", 
        subtitle="Maximum Income grouped by Gender",
        caption="Source: AmericanYouthLifeAspects",
-       x="Maximum Inco?e",
+       x?"Maximum Income",
        fill="# Sex")
 
 #next I did simple comparisons using a parts of a whole Treemap for simple comparison exploration
@@ -199,13 +239,13 @@ library(ggplot2)
 #install.packages("treemap")
 library(treemap)
 
-gm1979=sqldf("select COUNTRY_OF_BIRTH, SAMPLE_SEX,
-?NCOME_/10 INCOME_ from AmericanYouthLifeAspects where YEAR = 1979")
+gm1979=sqldf("select COUNTRY_OF_BIRTH? SAMPLE_SEX,
+INCOME_/10 INCOME_ from AmericanYouthLifeAspects where YEAR = 1979")
 gm1981=sqldf("select COUNTRY_OF_BIRTH, SAMPLE_SEX,
              INCOME_/10 INCOME_ from AmericanYouthLifeAspects where YEAR = 1981")
 
 treemap(gm1979,
-        index=c("COUNTRY_OF_BIRTH","SA?PLE_SEX"),
+        index=c("COUNTRY?OF_BIRTH","SAMPLE_SEX"),
         vSize="INCOME_",
         type="index"
 )
@@ -215,31 +255,31 @@ treemap(gm1979,
 #Next I explored Multi Distribution comparisons using and overlaid histogram.
 #
 
-ggplot(AmericanYouthLifeAspects, aes(x = INCOME_, fill = SAMPLE_SEX)) +   
- ?# Draw overlaying histogram
+ggplot(AmericanYouthLifeAspects, aes(x = INCOME_, fill = SAMPL?_SEX)) +   
+  # Draw overlaying histogram
   geom_histogram(position = "identity", alpha = 0.2, bins = 50)
 
 ##another overlaying plot
 #
 ggplot(AmericanYouthLifeAspects, aes(x = INCOME_, fill = COUNTRY_OF_BIRTH)) +   
   # Draw overlaying histogram
-  geom_histogram(positio? = "identity", alpha = 0.2, bins = 50)
+  geom_his?ogram(position = "identity", alpha = 0.2, bins = 50)
 
 #install.packages("ggforce")
 library(ggforce)
 library(reshape2)
 
 #Develop your story using 3 or more charts.  Charts should be relevant, effective, correct and should portray your story.  
-#Your charts should be unde?standable by readers who have not read your background research.       (12 marks)
+#Your charts ?hould be understandable by readers who have not read your background research.       (12 marks)
 #
 #chart that outputs the income of females and males between the years 1979-1989.
 #
 str(AmericanYouthLifeAspects)
 
 #selecting data between 1979 and 1985
-#df7989 = sqldf("sel?ct YEAR, SAMPLE_SEX, '5000' INCOME_ from AmericanYouthLifeAspects group by YEAR_OF_BIRTH")
+#df798? = sqldf("select YEAR, SAMPLE_SEX, '5000' INCOME_ from AmericanYouthLifeAspects group by YEAR_OF_BIRTH")
 #df7985 <- sqldf("select * from AmericanYouthLifeAspects where YEAR between 1979 and 1985")
-#df7985 <- sqldf("select * from df7989 where COUNTRY_OF_BIRTH = 'IN THE U?'")
+#df7985 <- sqldf("select * from df7989 where COUNTRY_OF_BIR?H = 'IN THE US'")
 #head(df7989, n = 30)
 str(df7985)
 
@@ -248,11 +288,10 @@ str(df7985)
 #df79 <- sqldf("select * from AmericanYouthLifeAspects where YEAR = '1979'")
 #str(df79)
 #df79US <- sqldf("select * from df79 where COUNTRY_OF_BIRTH = 'IN THE US'")
-#str(df79US)
-
-#first 172 r?ws
+#str(df79US)?
+#first 200 rows
 #
-dfID9 <- sqldf("select * from AmericanYouthLifeAspects where ID <= '9' ")
+dfID9 <- sqldf("select * from AmericanYouthLifeAspects where ID <= '15' ")
 str(dfID9)
 #selecting years
 #
@@ -261,31 +300,31 @@ str(dfID7999)
 
 # encoded scatterplot for 1979-99
 #
-ptch = ggplot(dfID7999? aes(x=YEAR, y=INCOME_, colour = SAMPLE_SEX)) + 
+ptch = ?gplot(dfID7999, aes(x=YEAR, y=INCOME_, colour = SAMPLE_SEX)) + 
   geom_point() + 
   labs(title = 'Plotting Data from the Year 1979-99 for 
   -income per Year ',
         subtitle = 'Colour coded by GENDER / SEX',
-                   x = 'Timeline of Years (1979-1999)', y='?ncome of Year',
+                   x = 'Timeline of Years (1?79-1999)', y='Income per Year',
                    caption='Based on Gender') + theme(panel.background=element_rect(fill='white'), panel.grid.minor = element_line(color = "black",
-                                                                                            ?                                      size = 0.5,
+                                                                            ?                                                      size = 0.5,
                                                                                                                                    linetype = 2), 
-                                                      legen?.text = element_text(colour = "blue", size = rel(.75)), 
+                                           ?          legend.text = element_text(colour = "blue", size = rel(.75)), 
                                                       legend.title = element_text(colour = 'black', size = rel(1)),
-                                                      plot.title = element_text(col?ur = "black", size = rel(2)),
+                                                      plot.title = ?lement_text(colour = "black", size = rel(2)),
                                                       plot.subtitle = element_text(size = rel(1.5)),
-                                                      plot.caption = element_text(size = rel(1.5), face='bold')) + 
-  annotat?("text",  x = 1989, y = 65000, label = "Highest Income Male", size =4, fontface='italic')+
-  geom_circle(aes(x0 = 1989, y0 = 62400, r = 5),
+                                                      plot.caption = element_text(size = rel(1.5), face='bold?)) + 
+  annotate("text",  x = 1993, y = 105000, label = "Highest Income Male", size =4, fontface='italic')+
+  geom_circle(aes(x0 = 1993, y0 = 100000, r = 5),
               inherit.aes = FALSE)
 ptch
 #
 #
 
 
-#first * row making it smaller for better looking graph
+#first * row making it smaller for better looking gr?ph
 #
-dfID39 <- sq?df("select * from AmericanYouthLifeAspects where ID <= '39' ")
+dfID39 <- sqldf("select * from AmericanYouthLifeAspects where ID <= '42' ")
 str(dfID39)
 #selecting years 2000-2012
 #
@@ -293,22 +332,22 @@ dfID2012 <- sqldf("select * from dfID39 where YEAR between 2000 and 2012")
 str(dfID2012)
 # encoded scatterplot for 2000-2012
 #
-ptch = ggplot(dfID2012, a?s(x=YEAR, y=INCOME_, colour = SAMPLE_SEX)) + 
+ptch = ?gplot(dfID2012, aes(x=YEAR, y=INCOME_, colour = SAMPLE_SEX)) + 
   geom_point() + 
   labs(title = 'Plotting Data from the Year 2000-12 for 
   -income per Year ',
        subtitle = 'Colour coded by GENDER / SEX',
-       x = 'Timeline of Years (2000-2012)', y='Income per Year'?
+       x = 'Timeline of Years (2000-2012)', y?'Income per Year',
        caption='Based on Gender') + theme(panel.background=element_rect(fill='white'), panel.grid.minor = element_line(color = "black",
-                                                                                                                       ?ize = 0.5,
+                                                                                                     ?                 size = 0.5,
                                                                                                                        linetype = 2), 
-                                          legend.text = element_text(colour = "blue", size = rel(.75)), 
-     ?                                    legend.title = element_text(colour = 'black', size = rel(1)),
+                                          legend.text = element_text(colour = "blue", size =?rel(.75)), 
+                                          legend.title = element_text(colour = 'black', size = rel(1)),
                                           plot.title = element_text(colour = "black", size = rel(2)),
-                                          plot.subtitle ? element_text(size = rel(1.5)),
+                                      ?   plot.subtitle = element_text(size = rel(1.5)),
                                           plot.caption = element_text(size = rel(1.5), face='bold')) + 
   annotate("text",  x = 2012, y = 355000, label = "Female Highest", size =4, fontface='italic')+
-  geom_circle(aes(x0 = ?012, y0 = 340500, r = 1),
+  geo?_circle(aes(x0 = 2012, y0 = 340500, r = 1),
               inherit.aes = FALSE)
 ptch
 #
@@ -317,9 +356,9 @@ ptch
 #next, i made a 3 line chart 
 #
 #
-#columns have been chosen to merge into new tidied dataset for 3line Chart
+#columns have been chosen to merge into new tidied dataset fo? 3line Chart
 #
-#d?3Line <-df%>%
+#df3Line <-df%>%
   #select('ID', 'YEAR','SAMPLE_SEX','INCOME_')
 
 #str(df3Line)
@@ -330,7 +369,7 @@ ptch
 #str(dfID9Line)
 #selecting years
 #
-#dfID7999Line <- sqldf("select ? from dfID9Line where YEAR between 1979 and 1999")
+#dfID7999Line?<- sqldf("select * from dfID9Line where YEAR between 1979 and 1999")
 #str(dfID7999Line)
 
 #p<- ggplot() +
@@ -339,9 +378,9 @@ ptch
   #ylab("y axis")
 #p
 
-#single variable exploration
+#single variable ?xploration
 #
-#Den?ity Plot - encoded
+#Density Plot - encoded
 #
 
 
@@ -351,18 +390,19 @@ ptch
 g <- ggplot(dfID7999, aes(INCOME_MAX))
 g + geom_density(aes(fill=factor(SAMPLE_SEX)), alpha=0.8) + 
   labs(title="Density plot", 
-       subtitle="Maximum Income From 1979-1999 Based on Gender",
-       caption?"Source: dfID7999",
+       subtitle="Maximum Income From 1979-1999 Based on Gende?",
+       caption="Source: df7999",
        x="Maximum Income",
+       y ="Density",
        fill="Gender / Sex") + 
 theme(
     panel.background=element_rect(fill='white'),
     panel.grid.minor = element_line(color = "black",
-                                    size = 0.5,
-                     ?              linetype = 2), legend.text = element_text(colour = "blue", size = rel(.75)),
+                                ?   size = 0.5,
+                                    linetype = 2), legend.text = element_text(colour = "blue", size = rel(.75)),
     legend.title = element_text(colour = 'black', size = rel(1)),
-    plot.title = element_text(colour = "black", size = rel(2)),
-    plot.subtitle = element_text(si?e = rel(1.5)),
+    plot.title = element_text(colour = "black", size = rel(2))?
+    plot.subtitle = element_text(size = rel(1.5)),
     plot.caption = element_text(size = rel(1.5), face='bold')
 )
 #
@@ -372,18 +412,19 @@ theme(
 # Plot
 g <- ggplot(dfID2012, aes(INCOME_MAX))
 g + geom_density(aes(fill=factor(SAMPLE_SEX)), alpha=0.8) + 
-  labs(title="Density plot", 
-       subtitle="Max?mum Income From 2000-2012 Based on Gender",
+  labs(title=?Density plot", 
+       subtitle="Maximum Income From 2000-2012 Based on Gender",
        caption="Source: dfID2012",
        x="Maximum Income",
+       y ="Density",
        fill="Gender / Sex") + 
   theme(
     panel.background=element_rect(fill='white'),
-    panel.grid.minor = element_line(color = "black",
-        ?                           size = 0.5,
+   ?panel.grid.minor = element_line(color = "black",
+                                    size = 0.5,
                                     linetype = 2), legend.text = element_text(colour = "blue", size = rel(.75)),
-    legend.title = element_text(colour = 'black', size = rel(1)),
-    plot.title = element_text(colour =?"black", size = rel(2)),
+    legend.title = element_text(colour = 'blac?', size = rel(1)),
+    plot.title = element_text(colour = "black", size = rel(2)),
     plot.subtitle = element_text(size = rel(1.5)),
     plot.caption = element_text(size = rel(1.5), face='bold')
   )
@@ -393,156 +434,155 @@ g + geom_density(aes(fill=factor(SAMPLE_SEX)), alpha=0.8) +
 
 
 #selecting data for overlaying histogram 1979-1999
-#
-Overlaid7999 <- sqldf("select * from AmericanYouthLifeAs?ects where YEAR between 1979 and 1999")
+?
+Overlaid7999 <- sqldf("select * from AmericanYouthLifeAspects where YEAR between 1979 and 1999")
 str(Overlaid7999)
 #multi distribution comparisons, overlaid histogram
 #
 #1979-1999
 #
 ggplot(Overlaid7999, aes(x = JOBSNUM_, fill = SAMPLE_SEX)) +   
-  # Draw overlaying histogram
-  geom_histogram(position = "identity?, alpha = 0.5, bins = 50) + 
+  # Draw ?verlaying histogram
+  geom_histogram(position = "identity", alpha = 0.5, bins = 50) + 
   labs(title="Overlaid Histogram ", 
        subtitle="Number of Jobs Worked for Males & Females ",
        caption="Source: Overlaid7999",
        x="Number of Jobs",
-       fill="Gender / Sex") +
+    ?  fill="Gender / Sex") +
   theme(
-    panel.background=el?ment_rect(fill='white'),
+    panel.background=element_rect(fill='white'),
     panel.grid.minor = element_line(color = "black",
                                     size = 0.5,
-                                    linetype = 2), legend.text = element_text(colour = "blue", size = rel(.75)),
-    legend.title ? element_text(colour = 'black', size = rel(1)),
+                                    linetype = 2), legend.text = element?text(colour = "blue", size = rel(.75)),
+    legend.title = element_text(colour = 'black', size = rel(1)),
     plot.title = element_text(colour = "black", size = rel(2)),
     plot.subtitle = element_text(size = rel(1.5)),
-    plot.caption = element_text(size = rel(1.5), face='bold')
+    plot.caption = element_text(siz? = rel(1.5), face='bold')
   )
 
 
-#selecting data for overl?ying histogram 2000-2012
+#selecting data for overlaying histogram 2000-2012
 #
 Overlaid2012 <- sqldf("select * from AmericanYouthLifeAspects where YEAR between 2000 and 2012")
 str(Overlaid2012)
 #multi distribution comparisons, overlaid histogram
 #
-#2000-2012
+#2?00-2012
 #
-ggplot(Overlaid2012, aes(x = JOBSNUM_, fill = S?MPLE_SEX)) +   
+ggplot(Overlaid2012, aes(x = JOBSNUM_, fill = SAMPLE_SEX)) +   
   # Draw overlaying histogram
   geom_histogram(position = "identity", alpha = 0.5, bins = 50) + 
   labs(title="Overlaid Histogram ", 
-       subtitle="Number of Jobs Worked for Males & Females ",
+       subtitle="Number of Jobs Worked for Males?& Females ",
        caption="Source: Overlaid2012",
-     ? x="Number of Jobs",
+       x="Number of Jobs",
        fill="Gender / Sex") +
   theme(
     panel.background=element_rect(fill='white'),
     panel.grid.minor = element_line(color = "black",
-                                    size = 0.5,
-                                    linetype =?2), legend.text = element_text(colour = "blue", size = rel(.75)),
+                                    ?ize = 0.5,
+                                    linetype = 2), legend.text = element_text(colour = "blue", size = rel(.75)),
     legend.title = element_text(colour = 'black', size = rel(1)),
     plot.title = element_text(colour = "black", size = rel(2)),
-    plot.subtitle = element_text(size = rel(1.5)),
-    plot.?aption = element_text(size = rel(1.5), face='bold')
+  ? plot.subtitle = element_text(size = rel(1.5)),
+    plot.caption = element_text(size = rel(1.5), face='bold')
   )
 
 
 #Next was a small multiple chart for a multi distribution comparison
 #comparing the yaer people were born wioth the max income
-#doesnt matter what yesr you were born all about the year you earned
-#1?79-2012
+#doesnt matte? what yesr you were born all about the year you earned
+#1979-2012
 #selecting data for small multiple for 1957-60
 #
 smalldf5760 <- sqldf("select * from AmericanYouthLifeAspects where YEAR_OF_BIRTH between 56 and 60")
 str(smalldf5760)
 #
-ggplot(data=smalldf5760, aes(x=INCOME_MAX, fill = SAMPLE_SEX, colour=SAMPLE_SEX?) +
+ggplot(data=smalldf57?0, aes(x=INCOME_MAX, fill = SAMPLE_SEX, colour=SAMPLE_SEX)) +
   geom_histogram(binwidth=500) +
   facet_wrap(~YEAR_OF_BIRTH) +
   labs(title="Small Multiples ", 
        subtitle="Maximum Income Based on Year they were Born, 1957-1960. ",
-       caption="Source: smalldf5760",
+       caption="Sour?e: smalldf5760",
        x="Maximum Income") +
   theme(
-  ? panel.background=element_rect(fill='white'),
+    panel.background=element_rect(fill='white'),
     panel.grid.minor = element_line(color = "black",
                                     size = 0.5,
-                                    linetype = 2), legend.text = element_text(colour = "blue", size = rel(.75?),
+                                    linetype = 2), ?egend.text = element_text(colour = "blue", size = rel(.75)),
     legend.title = element_text(colour = 'black', size = rel(1)),
     plot.title = element_text(colour = "black", size = rel(2)),
     plot.subtitle = element_text(size = rel(1.3)),
-    plot.caption = element_text(size = rel(1.5), face='bold'))
+    plot.capti?n = element_text(size = rel(1.5), face='bold'))
 #
 #
 #
-#19?1-64
+#1961-64
 #
 smalldf6164 <- sqldf("select * from AmericanYouthLifeAspects where YEAR_OF_BIRTH between 61 and 64")
 str(smalldf6164)
 #
-ggplot(data=smalldf6164, aes(x=INCOME_MAX, fill = SAMPLE_SEX, colour=SAMPLE_SEX)) +
+ggplot(data=smalldf6164, aes(x=INCOME_MAX, fill = SAMPLE_SEX, colour=SA?PLE_SEX)) +
   geom_histogram(binwidth=500) +
-  facet_wrap?~YEAR_OF_BIRTH) +
+  facet_wrap(~YEAR_OF_BIRTH) +
   labs(title="Small Multiples ", 
        subtitle="Maximum Income Based on Year they were Born, 1961-1964. ",
        caption="Source: smalldf5760",
        x="Maximum Income") +
-  theme(
+  t?eme(
     panel.background=element_rect(fill='white'),
-   ?panel.grid.minor = element_line(color = "black",
+    panel.grid.minor = element_line(color = "black",
                                     size = 0.5,
-                                    linetype = 2), legend.text = element_text(colour = "blue", size = rel(.75)),
-    legend.title = element_text(colour = 'blac?', size = rel(1)),
+                                    linetype = 2), legend.text = element_text(colour = "blue", size =?rel(.75)),
+    legend.title = element_text(colour = 'black', size = rel(1)),
     plot.title = element_text(colour = "black", size = rel(1.5)),
     plot.subtitle = element_text(size = rel(1.3)),
-    plot.caption = element_text(size = rel(1.5), face='bold'))
-
+    plot.caption = element_text(size = rel(1.5), face='bold'))?
 ##
 #
 #2000-2012
-#Time Trend using stream graph for Mean ?ncome based on gender over the years 2000-2012
+#Time Trend using stream graph for Mean income based on gender over the years 2000-2012
 dfstream<-sqldf("select SAMPLE_SEX, avg(INCOME_) INCOMEmean, YEAR from dfID7999 group by SAMPLE_SEX,YEAR")
 head(dfstream)
 #
-p3 = ggplot(data=dfstream,aes(x=YEAR,y=INCOMEmean, colour=SAMPLE_SEX,fill=SAMPLE_SEX)? + 
+p3 = ggplot(data=dfstream,a?s(x=YEAR,y=INCOMEmean, colour=SAMPLE_SEX,fill=SAMPLE_SEX)) + 
   geom_stream(alpha = 0.9)+
   labs(title="Stream Graph ", 
        subtitle="Mean Income based for male and females from the years 1979-1999 ",
        caption="Source: dfstream",
-       x="Year", y="Mean Income") +
-  theme(
-    panel.background=element_?ect(fill='white'),
-    panel.grid.minor = element_line(color = "black",
-                                    size = 0.5,
-                                    linetype = 2), legend.text = element_text(colour = "blue", size = rel(.75)),
-    legend.title = elem?nt_text(colour = 'black', size = rel(1)),
-    plot.title = element_text(colour = "black", size = rel(1.5)),
-    plot.subtitle = element_text(size = rel(1.3)),
-    plot.caption = element_text(size = rel(1.5), face='bold'))
-p3
-
-##
-#2000-2012
-#Time Trend usin? stream graph for Mean income based on gender over the years 2000-2012
-dfstream1<-sqldf("select SAMPLE_SEX, avg(INCOME_) INCOMEmean, YEAR from dfID2012 group by SAMPLE_SEX,YEAR")
-head(dfstream1)
-#
-p3 = ggplot(data=dfstream1,aes(x=YEAR,y=INCOMEmean, colour=?AMPLE_SEX,fill=SAMPLE_SEX)) + 
-  geom_stream(alpha = 0.95)+theme_classic()+
-  labs(title="Stream Graph ", 
-       subtitle="Mean Income based for male and females from the years 2000-2012 ",
-       caption="Source: dfstream1",
-       x="Year", y="Mean Inco?e") +
+       x="Year",?y="Mean Income") +
   theme(
     panel.background=element_rect(fill='white'),
     panel.grid.minor = element_line(color = "black",
                                     size = 0.5,
-                                    linetype = 2), legend.text = element_text(colour = "blu?", size = rel(.75)),
+                                    linetype = 2), legend.text = element_text(?olour = "blue", size = rel(.75)),
     legend.title = element_text(colour = 'black', size = rel(1)),
     plot.title = element_text(colour = "black", size = rel(1.5)),
     plot.subtitle = element_text(size = rel(1.3)),
-    plot.caption = element_text(size = rel(1.5), fac?='bold'))
+    plot.caption = element_text(size = ?el(1.5), face='bold'))
+p3
+
+##
+#2000-2012
+#Time Trend using stream graph for Mean income based on gender over the years 2000-2012
+dfstream1<-sqldf("select SAMPLE_SEX, avg(INCOME_) INCOMEmean, YEAR from dfID2012 group by SAMPLE_SEX,YEAR")
+head(dfstream1)
+#
+p? = ggplot(data=dfstream1,aes(x=YEAR,y=INCOMEmean, colour=SAMPLE_SEX,fill=SAMPLE_SEX)) + 
+  geom_stream(alpha = 0.95)+theme_classic()+
+  labs(title="Stream Graph ", 
+       subtitle="Mean Income based for male and females from the years 2000-2012 ",
+       ?aption="Source: dfstream1",
+       x="Year", y="Mean Income") +
+  theme(
+    panel.background=element_rect(fill='white'),
+    panel.grid.minor = element_line(color = "black",
+                                    size = 0.5,
+                                 ?  linetype = 2), legend.text = element_text(colour = "blue", size = rel(.75)),
+    legend.title = element_text(colour = 'black', size = rel(1)),
+    plot.title = element_text(colour = "black", size = rel(1.5)),
+    plot.subtitle = element_text(size = rel(1?3)),
+    plot.caption = element_text(size = rel(1.5), face='bold'))
 p3
 
 
